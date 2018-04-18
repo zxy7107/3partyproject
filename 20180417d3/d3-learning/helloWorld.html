@@ -1,0 +1,197 @@
+<html> 
+  <head> 
+        <meta charset="utf-8"> 
+        <title>HelloWorld</title> 
+  </head> 
+    <body> 
+        <p>Hello World 1</p>
+        <p>Hello World 2</p>
+        <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script> 
+        <script>  
+        // var p = d3.select("body").selectAll("p").text("www.ourd3js.com");      //1. 使用 d3.select() 或 d3.selectAll() 选择元素后返回的对象，就是选择集。
+        // //修改段落的颜色和字体大小
+        // p.style("color","red")
+        //  .style("font-size","72px");  //2. D3 能够连续不断地调用函数，这称为链式语法
+
+
+        // D3 中是通过以下两个函数来绑定数据的：
+        // datum()：绑定一个数据到选择集上
+        // data()：绑定一个数组到选择集上，数组的各项值分别与选择集的各元素绑定
+
+
+        // var str = "China";
+
+        // var body = d3.select("body");
+        // var p = body.selectAll("p");
+
+        // p.datum(str);
+
+        // p.text(function(d, i){
+        //     return "第 "+ i + " 个元素绑定的数据是 " + d;
+        // });
+
+
+//         var dataset = ["I like dog","I like cat","I like snake"];
+//         var body = d3.select("body");
+//         var p = body.selectAll("p");
+
+//         p.data(dataset)
+//           .text(function(d, i){
+//               return d;
+//           });
+
+
+            // body.insert("p","#myid")
+            //   .text("insert p element");
+
+            var width = 300;  //画布的宽度
+            var height = 300;   //画布的高度
+
+            var svg = d3.select("body")     //选择文档中的body元素
+                .append("svg")          //添加一个svg元素
+                .attr("width", width)       //设定宽度
+                .attr("height", height);    //设定高度
+
+
+
+
+            // var dataset = [ 250 , 210 , 170 , 130 , 90 ];  //数据（表示矩形的宽度）
+
+            // var rectHeight = 25;   //每个矩形所占的像素高度(包括空白)
+
+            // svg.selectAll("rect")
+            //     .data(dataset)
+            //     .enter()
+            //     .append("rect")
+            //     .attr("x",20)
+            //     .attr("y",function(d,i){
+            //          return i * rectHeight;
+            //     })
+            //     .attr("width",function(d){
+            //          return d;
+            //     })
+            //     .attr("height",rectHeight-2)
+            //     .attr("fill","steelblue");
+
+            // svg.selectAll("rect")   //选择svg内所有的矩形
+            //     .data(dataset)  //绑定数组
+            //     .enter()        //指定选择集的enter部分
+            //     .append("rect") //添加足够数量的矩形元素     //将数组与元素数量为 0 的选择集绑定后，选择其 Enter 部分（请仔细看上图），然后添加（append）元素，也就是添加足够的元素，使得每一个数据都有元素与之对应。
+
+
+    // 1. 如果数组为 [3, 6, 9, 12, 15]，将此数组绑定到三个 p 元素的选择集上。可以想象，会有两个数据没有元素与之对应，这时候 D3 会建立两个空的元素与数据对应，这一部分就称为 Enter。
+    // 2. 而有元素与数据对应的部分称为 Update。
+    // 3. 如果数组为 [3]，则会有两个元素没有数据绑定，那么没有数据绑定的部分被称为 Exit。
+
+
+
+
+    // var dataset = [ 3 , 6 , 9 , 12 , 15 ];
+
+    // //选择body中的p元素
+    // var p = d3.select("body").selectAll("p");
+
+    // //获取update部分
+    // var update = p.data(dataset);
+
+    // //获取enter部分
+    // var enter = update.enter();
+
+    // //update部分的处理：更新属性值
+    // update.text(function(d){
+    //     return "update " + d;
+    // });
+
+    // //enter部分的处理：添加元素后赋予属性值
+    // enter.append("p")
+    //     .text(function(d){
+    //         return "enter " + d;
+    //     });
+
+
+
+
+// var circle = svg.append("circle");
+
+// circle.on("click", function(){
+//     //在这里添加交互内容
+//     console.log(d3.event);
+// });
+
+
+// 完整的柱形图
+//画布大小
+var width = 400;
+var height = 400;
+
+//在 body 里添加一个 SVG 画布   
+var svg = d3.select("body")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+//画布周边的空白
+var padding = {left:30, right:30, top:20, bottom:20};
+
+//定义一个数组
+var dataset = [10, 20, 30, 40, 33, 24, 12, 5];
+
+//x轴的比例尺
+var xScale = d3.scale.ordinal()
+    .domain(d3.range(dataset.length))
+    .rangeRoundBands([0, width - padding.left - padding.right]);
+
+//y轴的比例尺
+var yScale = d3.scale.linear()
+    .domain([0,d3.max(dataset)])
+    .range([height - padding.top - padding.bottom, 0]);
+
+
+//定义x轴
+var xAxis = d3.svg.axis()
+    .scale(xScale)
+    .orient("bottom");
+
+//定义y轴
+var yAxis = d3.svg.axis()
+    .scale(yScale)
+    .orient("left");
+
+//矩形之间的空白
+var rectPadding = 4;
+
+
+          
+var rects = svg.selectAll(".MyRect")
+        .data(dataset)
+        .enter()
+        .append("rect")
+        .attr("class","MyRect")   //把类里的 fill 属性清空
+        .attr("transform","translate(" + padding.left + "," + padding.top + ")")
+        .attr("x", function(d,i){
+            return xScale(i) + rectPadding/2;
+        } )
+        .attr("y",function(d){
+            return yScale(d);
+        })
+        .attr("width", xScale.rangeBand() - rectPadding )
+        .attr("height", function(d){
+            return height - padding.top - padding.bottom - yScale(d);
+        })
+        .attr("fill","steelblue")       //填充颜色不要写在CSS里
+        .on("mouseover",function(d,i){
+            d3.select(this)
+                .attr("fill","yellow");
+        })
+        .on("mouseout",function(d,i){
+            d3.select(this)
+                .transition()
+                .duration(500)
+                .attr("fill","steelblue");
+        });
+
+
+        </script> 
+    </body> 
+</html>
+
