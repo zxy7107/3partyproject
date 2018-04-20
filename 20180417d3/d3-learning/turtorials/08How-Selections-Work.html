@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>How Selections Work</title>
+</head>
+<body>
+<div class="container"></div>
+<div id="Ford"></div>
+<div id="Jarrah"></div>
+<div id="Kwon"></div>
+<div id="Locke"></div>
+<div id="Reyes"></div>
+<div id="Shephard"></div>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+
+<script>
+//    var selection = d3.select("body"); //=>1. one group 2.  the parent element is the document element.
+//    1. the group as selection[0]
+//    2. the node as selection[0][0]
+//    selection.node
+
+//    d3.selectAll("tr").selectAll("td");
+//    selection.selectAll  //=> 1. multiple groups 2.  whose parents are tr elements
+
+    //d3.selectAll("tr").selectAll("td").selectAll("span");
+    //group - td  /group - span
+
+    //The parent node is set when the group is created.
+
+    // the second argument to your function (i) is the within-group index rather than the within-selection index.
+
+
+    //Only selectAll has special behavior regarding grouping;
+    // select preserves the existing grouping.
+
+
+
+    //data is assigned to the __data__ property of each element.
+
+
+//    Data is bound to elements one of several ways:
+//        1. Joined to groups of elements via selection.data.
+//        2. Assigned to individual elements via selection.datum.
+//        3. Inherited from a parent via append, insert, or select.
+
+
+//    what is data?
+//    Even an array of arrays:
+//
+//        var matrix = [
+//            [ 0,  1,  2,  3],
+//            [ 4,  5,  6,  7],
+//            [ 8,  9, 10, 11],
+//            [12, 13, 14, 15]
+//        ];
+
+
+
+    //selection.data defines data per-group rather than per-element:
+    // data is expressed as an array of values for the group,
+    // or a function that returns such an array.
+
+
+    var letters = [
+        {name: "A", frequency: .08167},
+        {name: "B", frequency: .01492},
+        {name: "C", frequency: .02780},
+        {name: "D", frequency: .04253},
+        {name: "E", frequency: .12702}
+    ];
+
+
+    function name(d) {
+        return d.name;
+    }
+    d3.select(".container").selectAll("div").data(letters, function(d){
+        return d? d.name : this.id;
+    }).enter().append("div")
+        .text(function(d){
+            return d.name + ":" + d.frequency
+        });
+
+
+var data = [
+    {name: "Locke", number: 4},
+    {name: "Reyes", number: 8},
+    {name: "Ford", number: 15},
+    {name: "Jarrah", number: 16},
+    {name: "Shephard", number: 31},
+    {name: "Kwon", number: 34}
+];
+
+d3.selectAll("div")
+    .data(data, function(d) { return d ? d.name : this.id; })
+    .text(function(d) { return d.number; });
+
+</script>
+</body>
+</html>

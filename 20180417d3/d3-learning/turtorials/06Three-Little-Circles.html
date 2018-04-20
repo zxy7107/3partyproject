@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Three Little Circles</title>
+</head>
+<body>
+Note that in SVG, the <a href="https://www.w3.org/TR/SVG/coords.html#Introduction">origin</a> is in the top-left corner.
+<svg width="720" height="120">
+    <circle cx="40" cy="60" r="10"></circle>
+    <circle cx="80" cy="60" r="10"></circle>
+    <circle cx="120" cy="60" r="10"></circle>
+</svg>
+
+
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script>
+    //----------------------
+//    var circle = d3.selectAll("circle");
+//    circle.style("fill", "steelblue");
+//    circle.attr("r", 30);
+////    circle.attr("cx", function() { return Math.random() * 720; });
+//    circle.data([32, 57, 112]);
+//    circle.attr("r", function(d) { return Math.sqrt(d); });
+//    circle.attr("cx", function(d, i) { return i * 100 + 30; });
+
+    //Note that in SVG, the origin is in the top-left corner.
+
+    //----------------------
+//    var svg = d3.select("svg");
+//
+//    var circle = svg.selectAll("circle")
+//        .data([32, 57, 112, 293]);
+//
+//    var circleEnter = circle.enter().append("circle");
+//        circleEnter.attr("cy", 60);
+//        circleEnter.attr("cx", function(d, i) { return i * 100 + 30; });
+//        circleEnter.attr("r", function(d) { return Math.sqrt(d); });
+
+    // selectAll + data + enter + append
+
+    //------------
+//    var svg = d3.select("svg");
+//
+//    var circle = svg.selectAll("circle")
+//        .data([32, 57]);
+//    circle.exit().remove();
+//
+//
+//
+    //----------
+    var svg = d3.select("svg");
+
+    var circle = svg.selectAll("circle")
+        .data([32, 57, 293], function(d) { return d; });
+
+    circle.enter().append("circle")
+        .attr("cy", 60)
+        .attr("cx", function(d, i) { return i * 100 + 30; })
+        .attr("r", function(d) { return Math.sqrt(d); });
+
+    circle.exit().remove();
+
+</script>
+</body>
+</html>

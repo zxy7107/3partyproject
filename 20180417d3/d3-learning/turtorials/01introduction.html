@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+</head>
+<body>
+<a href="https://bl.ocks.org/mbostock">svg 例子</a>
+
+<h3>Turtorials<a href="https://d3js.org/#properties"></a></h3>
+<h5>Selectors are defined by <a href="https://www.w3.org/TR/selectors-api/">the W3C Selectors API</a></h5>
+
+
+<p>a</p>
+<p>b</p>
+<p>c</p>
+<div class="container">
+    <p></p>
+    <p></p>
+    <p></p>
+</div>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script>
+//    var paragraphs = document.getElementsByTagName("p");
+//    for (var i = 0; i < paragraphs.length; i++) {
+//        var paragraph = paragraphs.item(i);
+//        paragraph.style.setProperty("color", "white", null);
+//    }
+    // 等价于
+//    d3.selectAll("p").style("color", "white");
+
+    d3.select("body").style("background-color", "#fff");
+
+    //    D3 provides numerous methods for mutating nodes:
+    //    setting attributes or styles;
+    //    registering event listeners;
+    //    adding, removing or sorting nodes;
+    //    and changing HTML or text content.
+    //    Direct access to the underlying DOM is also possible, as each D3 selection is simply an array of nodes.
+//    Yet styles, attributes, and other properties can be specified as functions of data in D3, not just simple constants.
+
+    //randomly color paragraphs:
+    d3.selectAll("p").style("color", function() {
+        return "hsl(" + Math.random() * 360 + ",100%,50%)";
+    });
+
+
+    //To alternate shades of gray for even and odd nodes:
+//    d3.selectAll("p").style("color", function(d, i) {
+//        return i % 2 ? "#fff" : "#eee";
+//    })
+
+
+
+    d3.selectAll("p")
+        .data([4, 8, 15, 16, 23, 42])
+        .style("font-size", function(d) {
+            return d + "px";
+        });
+
+    //Once the data has been bound to the document, you can omit the data operator; D3 will retrieve the previously-bound data. This allows you to recompute properties without rebinding.
+
+
+    d3.select("body")
+        .selectAll("p")
+        .data([4, 8, 15, 16, 23, 42])
+        .enter().append("p")
+        .text(function(d) { return "I’m number " + d + "!"; });
+
+
+    // Update…
+    var p = d3.select(".container")
+        .selectAll("p")
+        .data([4, 8, 15, 16, 23, 42])
+        .text(function(d) { return '我是'+d; });
+
+    // Enter…
+    p.enter().append("p")
+        .text(function(d) { return d; });
+
+    // Exit…
+    p.exit().remove();
+
+
+    // A hybrid approach is even possible, where the document is initially rendered on the server, and updated on the client via D3.
+
+    //you can create SVG elements using D3 and style them with external stylesheets.
+
+    //to fade the background of the page to black:
+//    d3.select("body").transition()
+//        .style("background-color", "black");
+
+
+    //to resize circles in a symbol map with a staggered delay:
+
+
+//画布大小
+var width = 400;
+var height = 400;
+
+//在 body 里添加一个 SVG 画布
+var svg = d3.select("body")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+var circle = svg.append("circle");
+
+    d3.selectAll("circle").transition()
+        .duration(750)
+        .delay(function(d, i) { return i * 10; })
+        .attr("r", function(d) {
+            console.log(d)
+            return Math.sqrt(d * scale);
+        });
+
+</script>
+
+</body>
+</html>

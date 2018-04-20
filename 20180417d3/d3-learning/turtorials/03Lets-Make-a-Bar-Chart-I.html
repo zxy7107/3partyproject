@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Let’s Make a Bar Chart, I</title>
+</head>
+<body>
+<a href="http://flowingdata.com/2010/03/20/graphical-perception-learn-the-fundamentals-first/">perceptually-accurate</a>
+<a href="https://bost.ocks.org/mike/constancy/">Object Constancy</a>
+<a href="https://bost.ocks.org/mike/join/">Thinking with Joins</a>
+
+<section></section>
+<section></section>
+<section></section>
+<section></section>
+<div class="chart"></div>
+
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script>
+    //You can just as easily perform the same operation on many elements:
+//    var data = [4, 8, 15, 16, 23, 42];
+//    var section = d3.selectAll("section");
+//    var div = section.append("div");
+//
+
+//--------
+    //1. Another convenience of selections is method chaining: selection methods, such as selection.attr, return the current selection.
+    //2. some methods return a new one! For example, selection.append returns a new selection containing the new elements.
+
+//    d3.selectAll("section")
+//        .attr("class", "special")
+//        .append("div")
+//        .html("Hello, world!");
+
+//--------
+//    var section = d3.selectAll("section");
+//
+//    section.append("div")
+//        .html("First!");
+//
+//    section.append("div")
+//        .html("Second.");
+
+    //-----------
+//    var data = [4, 8, 15, 16, 23, 42];
+//    d3.select(".chart") //First, we select the chart container using a class selector.
+//        .selectAll("div") //Next we initiate the data join by defining the selection to which we will join data.
+//        .data(data) //Next we join the data (defined previously) to the selection using selection.data.
+//        .enter().append("div") //Since we know the selection is empty, the returned update and exit selections are also empty, and we need only handle the enter selection which represents new data for which there was no existing element.
+//        //We instantiate these missing elements by appending to the enter selection.
+//        .style("width", function(d) { return d * 10 + "px"; })
+//        .text(function(d) { return d; });
+
+    //------------
+    //D3’s selection operators such as attr, style and property,
+    // allow you to specify the value
+    // either as a constant (the same for all selected elements)
+    // or a function (computed separately for each element).
+
+
+    //-----
+    //    We can make these dependencies explicit and eliminate the magic number by using a linear scale. D3’s scales specify a mapping from data space (domain) to display space (range):
+    //Although x here looks like an object,
+    // it is also a function that returns
+    // the scaled display value in the range for
+    // a given data value in the domain.
+    var data = [4, 8, 15, 16, 23, 42];
+    var x = d3.scaleLinear()
+        .domain([0, d3.max(data)])
+        .range([0, 420]);
+
+    d3.select(".chart")
+        .selectAll("div")
+        .data(data)
+        .enter().append("div")
+        .style("width", function(d) { return x(d) + "px"; })
+        .style("background", "blue")
+        .style("color", "#fff")
+        .text(function(d) { return d; });
+</script>
+</body>
+</html>
