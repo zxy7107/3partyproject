@@ -1,0 +1,13 @@
+{
+  "nodes":[
+    { "name": "me"   , "image" : "tianhe.png" },
+    { "name": "丁岩磊"   , "image" : "lingsha.png", "department":"携程金融信用卡", "position": "JAVA开发" },
+    { "name": "林之娇"   , "image" : "mengli.png", "department":"QUNAR/金融事业部/消费金融/消费分期", "position": "产品经理"},
+    { "name": "崔世宁" , "image" : "ziying.png", "department": "QUNAR/金融事业部/消费金融/业务技术/信用创新", "position": "JAVA开发" }
+  ],
+  "edges":[
+    { "source": 0 , "target": 1 , "relation":"后端" },
+    { "source": 1 , "target": 2 , "relation":"挚友" },
+    { "source": 2 , "target": 3 , "relation":"挚友" }
+  ]
+}
