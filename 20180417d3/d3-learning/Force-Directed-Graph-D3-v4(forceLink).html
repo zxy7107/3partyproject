@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Positioning Forces (forceLink)</title>
+    <!--但是此时打开我们网页仍然看不到线条，我们需要对link的style进行设置。在CSS或中设置其stroke，如：-->
+    <style>
+        .links line {
+            stroke: #aaa;
+        }
+    </style>
+</head>
+<body>
+<script src="http://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+<script>
+    //forceLink
+    //节点之间的力，因此我们需要在定义节点的同时再定义他们之间的联系。
+
+
+    var width = 1000,
+        height = 600;
+    var nodeData = [	{'x':100,'y':100,'r':10,'id':1},
+        {'x':200,'y':100,'r':10,'id':2},
+        {'x':50,'y':200,'r':10,'id':3},
+        {'x':350,'y':200,'r':10,'id':4},
+        {'x':100,'y':300,'r':10,'id':5},
+        {'x':300,'y':300,'r':10,'id':6},
+        {'x':300,'y':250,'r':10,'id':7}];
+
+
+    //#定义Link
+    var nodeLinks = [{"source":0,"target":1,"distance":10},
+        {"source":1,"target":2,"distance":20},
+        {"source":2,"target":3,"distance":30},
+        {"source":3,"target":4,"distance":40},
+        {"source":4,"target":5,"distance":50},
+        {"source":5,"target":6,"distance":60},
+        {"source":6,"target":0,"distance":70}];
+    //这表示了7个节点首尾相连。
+
+    var svg = d3.select("body")
+        .append("svg")
+        .attr("width",width)
+        .attr("height",height);
+
+    function dist(d)
+    {
+        return d.distance+30;
+    }
+
+
+    //#定义Link Forces
+//    var linkForce  = d3.forceLink(nodeLinks).distance(dist).strength(2);
+//    var simulation = d3.forceSimulation(nodeData).alphaDecay(0.01).force("linkForce",linkForce);
+
+
+    //#综合其他力
+    //我们也可以与之前所提到的力结合：
+    var linkForce  = d3.forceLink(nodeLinks).distance(dist).strength(2);	//Define link forces
+    var simulation = d3.forceSimulation(nodeData).alphaDecay(0.01)
+        .force("linkForce",linkForce)
+        .force("charge", d3.forceManyBody())
+        .force("center", d3.forceCenter(width / 2, height / 2));
+
+
+    //Define the node
+    var node = svg.append("g")
+        .attr("class","nodes")
+        .selectAll("circle")
+        .data(nodeData)
+        .enter().append("circle")
+        .attr("r",function(d){return d.r;}).attr("cx",function(d){ return d.x;}).attr("cy",function(d){ return d.y;})
+        .attr("fill","black").attr("opacity",1)
+        .call(d3.drag()
+            .on("start",dragstarted)
+            .on("drag",dragged)
+            .on("end",dragended));
+
+    //#引入线条links
+    //Define the link
+    //虽然此时Link Forces已经存在，但是我们看不到它。因此有时我们需要把它们显示出来，因此引入Links。
+    var link = svg.append("g")
+        .attr("class", "links")
+        .selectAll("line")
+        .data(nodeLinks)
+        .enter()
+        .append("line");
+
+    //#引入标注
+    //此时我们无法分辨节点的id，因此我们引入标注：
+    //首先定义标注属性：
+
+    //Define the text
+    var text = svg.selectAll("text")
+        .data(nodeData)
+        .enter()
+        .append("text")
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "11px")
+        .attr("fill", "yellow");
+
+
+
+    simulation.on("tick",ticked);
+
+    function dragstarted(d)
+    {
+        if (!d3.event.active) simulation.restart();
+        simulation.alpha(0.7);
+        d.fx = d.x;
+        d.fy = d.y;
+
+    }
+
+    function dragged(d)
+    {
+        d.fx = d3.event.x;
+        d.fy = d3.event.y;
+    }
+
+    function dragended(d)
+    {
+        d.fx = null;
+        d.fy = null;
+        if (!d3.event.active) simulation.alphaTarget(0.1);
+    }
+
+    function ticked(){
+        node
+            .attr("cx", function(d){ return d.x;})
+            .attr("cy", function(d){ return d.y;})
+
+        link
+            .attr("x1", function(d) { return d.source.x; })
+            .attr("y1", function(d) { return d.source.y; })
+            .attr("x2", function(d) { return d.target.x; })
+            .attr("y2", function(d) { return d.target.y; });
+
+
+        //由于标志也随着节点位置变化而变化，因此在ticked()函数中我们也需要对text实时更新：
+        //同样，需要在ticked()中更新link：
+        text.text(function(d) {
+            return d.id;
+        })
+            .attr("x", function(d, i) {
+                return d.x;
+            })
+            .attr("dx", "-3.5")
+            .attr("dy", "2.5")
+            .attr("y", function(d) {
+                return d.y;
+            })
+    }
+
+
+
+
+
+
+
+
+
+
+</script>
+</body>
+</html>

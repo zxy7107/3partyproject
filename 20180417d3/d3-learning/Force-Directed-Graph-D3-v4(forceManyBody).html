@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Positioning Forces (forceManyBody)</title>
+
+</head>
+<body>
+<script src="http://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+<script>
+    //forceManyBody
+    // 有吸引力和排斥力，但是快速移动时节点会穿越，是不科学的。因此需要引入碰撞力。
+    //ForceManyBody可以用来仿真引力和斥力，如万有引力和静电力。所有节点相互之间都存在力。
+    //d3.forceManyBody()会使用缺省的参数，如果需要自己设置可以分别定义引力和斥力：
+
+    //  distanceMax: 考虑力的最大距离
+    //  distanceMin: 考虑力的最小距离
+
+
+    var width = 1000,
+        height = 600;
+
+    var svg = d3.select("body")
+        .append("svg")
+        .attr("width",width)
+        .attr("height",height);
+
+    var nodeData = [	{'x': 100,'y':100,'r':10},
+        {'x': 300,'y':100,'r':10},
+        {'x':50,   'y':200,'r':10},
+        {'x':350,'y':200,'r':10},
+        {'x':100,'y':300,'r':10},
+        {'x':300,'y':300,'r':10}];
+
+    var simulation = d3.forceSimulation(nodeData); //Initializing Simulation; nodes have been assigned
+
+    // Define the forces*************************
+    var attractForce = d3.forceManyBody().strength(200).distanceMax(400)
+        .distanceMin(60);
+    var repelForce = d3.forceManyBody().strength(-140).distanceMax(50)
+        .distanceMin(10);
+
+    var simulation = d3.forceSimulation(nodeData).alphaDecay(0.03)
+        .force("attractForce",attractForce)
+        .force("repelForce",repelForce);
+    // ********************************************
+
+    var node = svg.selectAll("circle").data(nodeData)
+        .enter().append("circle")
+        .attr("r",function(d){return d.r;}).attr("cx",function(d){ return d.x;}).attr("cy",function(d){ return d.y;})
+        .attr("fill","black").attr("opacity",0.5)
+        .call(d3.drag()
+            .on("start",dragstarted)
+            .on("drag",dragged)
+            .on("end",dragended));
+
+    function dragstarted(d)
+    {
+        simulation.restart();
+        simulation.alpha(1.0);
+        d.fx = d.x;
+        d.fy = d.y;
+    }
+
+    function dragged(d)
+    {
+        d.fx = d3.event.x;
+        d.fy = d3.event.y;
+    }
+
+    function dragended(d)
+    {
+        d.fx = null;
+        d.fy = null;
+        simulation.alphaTarget(0.1);
+    }
+
+    function ticked(){
+        node.attr("cx", function(d){ return d.x;})
+            .attr("cy", function(d){ return d.y;})
+    }
+
+    simulation.on("tick",ticked);
+
+</script>
+</body>
+</html>

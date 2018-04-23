@@ -1,0 +1,19 @@
+{
+  "nodes":
+  [{"x":100,"y":100,"r":10,"id":1, "name": "me"   , "image" : "tianhe.png" },
+  {"x":200,"y":100,"r":10,"id":2, "name": "a"   , "image" : "lingsha.png", "department":"携程金融信用卡", "position": "JAVA开发" },
+  {"x":50,"y":200,"r":10,"id":3, "name": "b"   , "image" : "mengli.png", "department":"QUNAR/金融事业部/消费金融/消费分期", "position": "产品经理"},
+  {"x":350,"y":200,"r":10,"id":4, "name": "c" , "image" : "ziying.png", "department": "QUNAR/金融事业部/消费金融/业务技术/信用创新", "position": "JAVA开发"},
+  {"x":100,"y":300,"r":10,"id":5},
+  {"x":300,"y":300,"r":10,"id":6},
+  {"x":300,"y":250,"r":10,"id":7}],
+  "edges":
+  [{"source":0,"target":1,"distance":10, "relation":"后端"},
+    {"source":1,"target":2,"distance":20, "relation":"挚友"},
+    {"source":2,"target":3,"distance":30, "relation":"挚友"},
+    {"source":3,"target":4,"distance":40},
+    {"source":4,"target":5,"distance":50},
+    {"source":5,"target":6,"distance":60},
+    {"source":6,"target":0,"distance":70}
+  ]
+}

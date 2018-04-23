@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Positioning Forces (forceCenter)</title>
+
+</head>
+<body>
+<script src="http://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+<script>
+    //forceCenter
+    //D3将所有节点视作相同的质量，Centering Forces使整个系统的质心始终保持在一个特定位置。
+    // 具体代码于Positioning Forces几乎一致，只是在定义力的地方改为
+    // simulation.force("centeringForce",d3.forceCenter(width/2,height/2));
+    // 显然，我们将质心固定在svg的中央。
+    var width = 1000,
+        height = 600;
+
+    var svg = d3.select("body")
+        .append("svg")
+        .attr("width",width)
+        .attr("height",height);
+
+    // var nodeData = [{'x':225,'y':100,'id':'First'}];
+    var nodeData =
+        [{'x': 100,'y':100,'r':10},
+        {'x': 300,'y':100,'r':10},
+        {'x':50,   'y':200,'r':10},
+        {'x':350,'y':200,'r':10},
+        {'x':100,'y':300,'r':10},
+        {'x':300,'y':300,'r':10}];
+
+    var simulation = d3.forceSimulation(nodeData); //Initializing Simulation; nodes have been assigned
+
+    simulation.force("centeringForce",d3.forceCenter(width/2,height/2));
+
+    var node = svg.selectAll("circle").data(nodeData)
+        .enter().append("circle")
+        .attr("r",function(d){ return d.r;})
+        .attr("cx",function(d){ return d.x;}) //cx 和 cy 属性定义圆点的 x 和 y 坐标。如果省略 cx 和 cy，圆的中心会被设置为 (0, 0)
+        .attr("cy",function(d){ return d.y;})
+        .attr("fill","black").attr("opacity",0.5)
+        .call(d3.drag()
+            .on("start",dragstarted)
+            .on("drag",dragged)
+            .on("end",dragended));
+
+    function dragstarted(d)
+    {
+        simulation.restart();
+        simulation.alpha(1.0);
+        d.fx = d.x;
+        d.fy = d.y;
+    }
+
+    function dragged(d)
+    {
+        d.fx = d3.event.x;
+        d.fy = d3.event.y;
+    }
+
+    function dragended(d)
+    {
+        d.fx = null;
+        d.fy = null;
+        simulation.alphaTarget(0.1);
+    }
+
+    function ticked(){
+        node.attr("cx", function(d){ return d.x;})
+            .attr("cy", function(d){ return d.y;})
+    }
+
+    simulation.on("tick",ticked);
+
+
+</script>
+</body>
+</html>

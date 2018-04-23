@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Positioning Forces (forceX,forceY)</title>
+</head>
+<body>
+<script src="http://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+<script>
+    //forceX, forceY
+    //最简单的恢复力，使一个节点回到最稳定的位置。
+
+    //#定义添加SVG
+    var width = 1000,
+        height = 600;
+
+    var svg = d3.select("body")
+        .append("svg")
+        .attr("width",width)
+        .attr("height",height);
+
+    //#定义节点
+    // x,y为节点的初始位置。
+    var nodeData = [{'x':100,'y':100,'id':'Node'}];
+
+    // #初始化仿真  //Initializing Simulation; nodes have been assigned
+    // 使用force需要创建仿真。传入参数为我们的节点数组。初始化的同时节点也进行了部署
+    var simulation = d3.forceSimulation(nodeData);
+    console.log(nodeData)
+    //    id: "Node"
+    //    index: 0
+    //    vx
+    //        :
+    //        -7.448162437094955
+    //    e-30
+    //    vy
+    //        :
+    //        -1.7934156621725577
+    //    e-28
+    //    x: 500
+    //    y: 300
+
+    // vx,vy分别为x方向和y方向的速度；x, y为节点当前的坐标。
+
+    // #定义力
+    // Define the forces: method 1
+    // simulation.force("xAxis",d3.forceX().strength(5).x(width/2))
+    // .force("yAxis",d3.forceY().strength(5).y(height/2));
+
+    // Define the forces: method 2
+    var xAxisForce = d3.forceX().strength(5).x(width/2);
+    //.strength()定义力的大小；
+    // 如果使用d3.forceX([x])能创造一种新的沿x轴的positioning force使节点到达指定的位置，缺省为0。这里我们将其至于svg中央。
+    var yAxisForce = d3.forceY().strength(5).y(height/2);
+    simulation.alphaDecay(0.01)
+        .force("xAxis",xAxisForce)
+        .force("yAxis",yAxisForce); //设置了alphaDecay()
+    //simulation.alpha(): alpha是仿真中非常重要的一个参数。它是一个0到1的值，表示仿真进行的程度。
+    // 仿真开始时alpha被设置为1，随后减小，减小的速度取决于alphaDecay，当alpha小于alphaTarget时仿真结束。
+    // alphaTarget缺省为0.1。
+
+    // # 定义节点
+    //Define the node
+    var node = svg.selectAll("circle").data(nodeData)
+        .enter().append("circle")
+        .attr("r",30).attr("cx",width/2).attr("cy",height/2)
+        .attr("fill","black").attr("opacity",0.5)
+        .call(d3.drag() //重点是d3.drag()中添加了3个事件监听器。
+            .on("start",dragstarted)
+            .on("drag",dragged)
+            .on("end",dragended));
+
+    // #tick
+    //最后需要用到事件tick，每个时刻都要调用它进行内容的更新。这里我们只需要更新节点坐标即可。
+    simulation.on("tick",ticked);
+
+    // dragstarted()做一些初始化操作，其中fx, fy定义了当我们开始拖动时节点的位置。
+    function dragstarted(d)
+    {
+        simulation.restart();
+        simulation.alpha(1.0);
+        d.fx = d.x;
+        d.fy = d.y;
+    }
+
+    //dragged()结合ticked()对节点位置不断更新
+    function dragged(d)
+    {
+        d.fx = d3.event.x;
+        d.fy = d3.event.y;
+    }
+
+    // dragended()将fx, fy设为null，使节点恢复状态。
+    function dragended(d)
+    {
+        d.fx = null;
+        d.fy = null;
+        simulation.alphaTarget(0.1);
+    }
+
+    function ticked(){
+        node.attr("cx", function(d){ return d.x;})
+            .attr("cy", function(d){ return d.y;})
+    }
+</script>
+</body>
+</html>

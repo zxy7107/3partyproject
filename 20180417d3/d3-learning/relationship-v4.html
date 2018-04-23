@@ -22,7 +22,9 @@
 
 </style>
 <body>
-<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<!--<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>-->
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
 <script>
 
     var width = 600;
@@ -35,7 +37,6 @@
             .attr("height",height);
 
 
-
 //    d3.json("relation.json",function(error,root){
     d3.json("relation-qunar.json",function(error,root){
 
@@ -44,21 +45,40 @@
         }
         console.log(root);
 
-        var force = d3.layout.force()
-                .nodes(root.nodes)
-                .links(root.edges)
-                .size([width,height])
-                .linkDistance(200)
-                .charge(-1500)
-                .start();
+//        Each node must be an object. The following properties are assigned by the simulation:
+    //        index - the node’s zero-based index into nodes
+    //        x - the node’s current x-position
+    //        y - the node’s current y-position
+    //        vx - the node’s current x-velocity
+    //        vy - the node’s current y-velocity
 
+//        var force = d3.layout.force()
+        var force = d3.forceSimulation()
+        //v4: velocity Verlet integration: tracking the nodes’ positions (node.x, node.y) and velocities (node.vx, node.vy)
+        //v3: position Verlet: their previous positions (node.px, node.py)
+                .nodes(root.nodes)
+//                .links(root.edges)
+//                .size([width,height])
+            //There are separate positioning forces for x and y that replace force.gravity;
+            // x.x and y.y replace force.size
+                .force("x", d3.forceX().strength(5).x(width/2))
+                .force("y", d3.forceY().strength(5).y(height/2))
+//                .linkDistance(200)
+                .force("link", d3.forceLink(root.edges).distance(200)) // distance为连线的距离设置
+//                .charge(-1500)
+                .force("charge", d3.forceManyBody().strength(-1500))  // 节点间的作用力
+//                .start();
+                .restart(); //启动
+
+
+//
         var edges_line = svg.selectAll("line")
                 .data(root.edges)
                 .enter()
                 .append("line")
                 .style("stroke","#ccc")
                 .style("stroke-width",1);
-
+//
         var edges_text = svg.selectAll(".linetext")
                 .data(root.edges)
                 .enter()
@@ -94,7 +114,7 @@
                         }
                     });
                 })
-//                .call(force.drag);
+                .call(force.drag);
 
         var text_dx = -20;
         var text_dy = 20;
@@ -109,7 +129,7 @@
                 .text(function(d){
                     return d.name;
                 });
-
+//
 
         force.on("tick", function(){
 
