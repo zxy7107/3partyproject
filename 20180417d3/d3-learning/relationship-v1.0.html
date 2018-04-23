@@ -10,6 +10,8 @@
     </style>
 </head>
 <body>
+<script src="http://apps.bdimg.com/libs/underscore.js/1.7.0/underscore-min.js"></script>
+
 <script src="http://d3js.org/d3.v4.min.js" charset="utf-8"></script>
 <script>
     //forceLink
@@ -18,25 +20,6 @@
 
     var width = 1000,
         height = 600;
-    var nodeData =
-        [{'x':100,'y':100,'r':10,'id':1},
-        {'x':200,'y':100,'r':10,'id':2},
-        {'x':50,'y':200,'r':10,'id':3},
-        {'x':350,'y':200,'r':10,'id':4},
-        {'x':100,'y':300,'r':10,'id':5},
-        {'x':300,'y':300,'r':10,'id':6},
-        {'x':300,'y':250,'r':10,'id':7}];
-
-
-    //#定义Link
-    var nodeLinks = [{"source":0,"target":1,"distance":10},
-        {"source":1,"target":2,"distance":20},
-        {"source":2,"target":3,"distance":30},
-        {"source":3,"target":4,"distance":40},
-        {"source":4,"target":5,"distance":50},
-        {"source":5,"target":6,"distance":60},
-        {"source":6,"target":0,"distance":70}];
-    //这表示了7个节点首尾相连。
 
     var svg = d3.select("body")
         .append("svg")
@@ -49,22 +32,98 @@
     }
 
 
+
+    var questions =[{
+        Q: "沟通业务逻辑：刷卡酒店可领券时间段",
+        edges:[{"source":0,"target":14,"distance":10, "relation":"后端"},
+            {"source":14,"target":5,"distance":20, "relation":"挚友"},
+            {"source":5,"target":6,"distance":20, "relation":"挚友"},
+            {"source":6,"target":9,"distance":20, "relation":"挚友"},
+            {"source":9,"target":2,"distance":20, "relation":"挚友"},
+
+        ]
+    },
+//        {
+//        Q: "数据库资源",
+//        edges:[{"source":0,"target":1,"distance":10, "relation":"后端"},
+//
+//        ]
+//    },{
+//        Q: "去哪儿酒店页面跳转问题",
+//        edges:[{"source":0,"target":1,"distance":10, "relation":"后端"},
+//            {"source":1,"target":2,"distance":20, "relation":"挚友"},
+//
+//        ]
+//    },{
+//        Q: "前端hysdk",
+//        edges:[{"source":0,"target":1,"distance":10, "relation":"后端"},
+//            {"source":1,"target":2,"distance":20, "relation":"挚友"},
+//
+//        ]
+//    },{
+//        Q: "配置offline权限",
+//        edges:[{"source":0,"target":1,"distance":10, "relation":"后端"},
+//            {"source":1,"target":2,"distance":20, "relation":"挚友"},
+//            {"source":2,"target":3,"distance":30, "relation":"挚友"},
+//
+//        ]
+//    }
+    ]
+
     d3.json("relation-qunar2.json",function(error,root){
+        var edges = {};
+        var edgesArray = [];
+        _.each(questions, function(q, k){
+          edges = _.extend({}, edges, q.edges)
+        })
+        console.log(edges)
+        _.each(edges, function(e,k) {
+            edgesArray.push(e)
+        })
+
+        root = _.extend({}, root, {
+            edges: edgesArray
+        })
+
         console.log(root)
 
 
-        //#定义Link Forces
-        //    var linkForce  = d3.forceLink(nodeLinks).distance(dist).strength(2);
-        //    var simulation = d3.forceSimulation(nodeData).alphaDecay(0.01).force("linkForce",linkForce);
 
 
         //#综合其他力
         //我们也可以与之前所提到的力结合：
-        var linkForce  = d3.forceLink(root.edges).distance(dist).strength(2);	//Define link forces
+//        var linkForce  = d3.forceLink(root.edges).distance(dist).strength(2);	//Define link forces
+        var linkForce  = d3.forceLink(root.edges)
+        var attractForce = d3.forceManyBody().strength(80).distanceMax(400)
+                .distanceMin(80);
+        var collisionForce = d3.forceCollide(30).strength(1).iterations(100);
         var simulation = d3.forceSimulation(root.nodes).alphaDecay(0.01)
-            .force("linkForce",linkForce)
-            .force("charge", d3.forceManyBody())
-            .force("center", d3.forceCenter(width / 2, height / 2));
+//                .force("charge", d3.forceManyBody().strength(-80))
+                .force("link", d3.forceLink(root.edges)
+                        .distance(function(d){
+                            console.log(d)
+                            var x1 = d.source.x;
+                            var x2 = d.target.x;
+                            var y1 = d.source.y;
+                            var y2 = d.target.y;
+
+                            return Math.sqrt(Math.pow((x1-x2),2)+Math.pow((y1-y2),2));
+                        })
+                        .strength(1).iterations(10))
+//                .force("link", d3.forceLink().id(function(d) {
+//                    console.log(d)
+//                    return d.id;
+//                }))
+
+//                .force("x", d3.forceX(30))
+//                .force("y", d3.forceY(30))
+//                .force("attractForce",attractForce)
+//                .force("collisionForce",collisionForce);
+//            .force("linkForce",linkForce)
+//            .force("charge", d3.forceManyBody())
+//            .force("center", d3.forceCenter(width / 2, height / 2));
+//                .stop();
+
 
 
         //Define the node
@@ -73,8 +132,10 @@
             .selectAll("circle")
             .data(root.nodes)
             .enter().append("circle")
-            .attr("r",function(d){return d.r;}).attr("cx",function(d){ return d.x;}).attr("cy",function(d){ return d.y;})
-            .attr("fill","black").attr("opacity",1)
+            .attr("r",function(d){return d.r;})
+            .attr("cx",function(d){ return d.x;})
+            .attr("cy",function(d){ return d.y;})
+            .attr("fill","blue").attr("opacity",1)
             .call(d3.drag()
                 .on("start",dragstarted)
                 .on("drag",dragged)
@@ -105,6 +166,7 @@
 
 
 
+
         simulation.on("tick",ticked);
         function dragstarted(d)
         {
@@ -130,11 +192,16 @@
 
         function ticked(){
             node
-                .attr("cx", function(d){ return d.x;})
+                .attr("cx", function(d){
+                    return d.x;
+                })
                 .attr("cy", function(d){ return d.y;})
 
             link
-                .attr("x1", function(d) { return d.source.x; })
+                .attr("x1", function(d) {
+//                    console.log(d)
+                    return d.source.x;
+                })
                 .attr("y1", function(d) { return d.source.y; })
                 .attr("x2", function(d) { return d.target.x; })
                 .attr("y2", function(d) { return d.target.y; });
