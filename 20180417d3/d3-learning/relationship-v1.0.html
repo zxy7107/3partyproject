@@ -10,21 +10,51 @@
     </style>
 </head>
 <body>
-<script src="http://apps.bdimg.com/libs/underscore.js/1.7.0/underscore-min.js"></script>
+<div id="my-div"></div>
+<svg id="relation" width="1000" height="600">
+    <!--<g id="learn-btn" transform="translate(10, 350)">-->
+    <!--<path fill="#0B9B87" d="M147.129,37.886c0,3.156-2.558,5.714-5.714,5.714H5.714C2.558,43.6,0,41.042,0,37.886V8.175-->
+						<!--c0-3.156,2.558-5.714,5.714-5.714h135.702c3.156,0,5.714,2.558,5.714,5.714V37.886z"/>-->
+    <!--<path fill="#10B29C" d="M147.129,35.425c0,3.156-2.558,5.714-5.714,5.714H5.714C2.558,41.139,0,38.581,0,35.425V5.714-->
+						<!--C0,2.558,2.558,0,5.714,0h135.702c3.156,0,5.714,2.558,5.714,5.714V35.425z"/>-->
+    <!--<text x="10" y="30"-->
+          <!--fill="#FFFFFF"-->
+          <!--class="base-font"-->
+          <!--font-size="22.6026">-->
+        <!--Learn More-->
+    <!--</text>-->
+</g>
 
+    <!--road为我们定义的路径id-->
+    <!--<path id="road" fill="none" stroke="#78EADF" stroke-width="30" stroke-linecap="round" stroke-miterlimit="10" d="M66.9,517-->
+<!--c0,0-37.8-194,125.1-161.9S427.6,371.5,350,205.7S439.3,23.4,544,62.2"/>-->
+    <!--<circle fill="#F8B62D" r="20">-->
+        <!--<animateMotion  dur="3s">-->
+            <!--<mpath xlink:href="#road"/> &lt;!&ndash;通过路径链接属性调用定义的路径&ndash;&gt;-->
+        <!--</animateMotion>-->
+    <!--</circle>-->
+
+</svg>
+<script src="
+https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js"></script>
+<script src="http://apps.bdimg.com/libs/underscore.js/1.7.0/underscore-min.js"></script>
+<script src="./textures.js"></script>
+<!--<script src="//cdn.jsdelivr.net/npm/vivus@latest/dist/vivus.min.js"></script>-->
 <script src="http://d3js.org/d3.v4.min.js" charset="utf-8"></script>
 <script>
+
     //forceLink
     //节点之间的力，因此我们需要在定义节点的同时再定义他们之间的联系。
-
-
     var width = 1000,
         height = 600;
 
-    var svg = d3.select("body")
-        .append("svg")
-        .attr("width",width)
-        .attr("height",height);
+//    var svg = d3.select("body")
+//        .append("svg")
+//        .attr("width",width)
+//        .attr("height",height);
+
+    var svg = d3.select('#relation');
+
 
     function dist(d)
     {
@@ -70,7 +100,7 @@
 //    }
     ]
 
-    d3.json("relation-qunar2.json",function(error,root){
+    d3.json("relation-qunar-2.0.json",function(error,root){
         var edges = {};
         var edgesArray = [];
         _.each(questions, function(q, k){
